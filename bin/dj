@@ -1,0 +1,8 @@
+#!/bin/bash
+
+dj='pipenv run python manage.py'
+cmd="$dj $@"
+echo $cmd
+if [[ ! -z "$@" ]]; then
+	bash -c "$cmd"
+fi

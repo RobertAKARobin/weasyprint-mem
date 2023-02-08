@@ -1,0 +1,3 @@
+#!/bin/bash
+
+bin/dj sass apps static --watch & AUTORELOAD=1 bin/dj runserver
