@@ -2,11 +2,15 @@ import os
 
 from django.conf.global_settings import DATETIME_INPUT_FORMATS
 
+DEBUG = (os.getenv('DEBUG') or False)
+
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
 INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
+
+    'apps.root',
 ]
 
 ALLOWED_HOSTS = [
