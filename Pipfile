@@ -10,3 +10,8 @@ python_version = "3.9"
 django = "*"
 weasyprint = "*"
 whitenoise = "*"
+gunicorn = "*"
+
+[dev-packages]
+django-debug-toolbar = "*"
+pympler = "*"

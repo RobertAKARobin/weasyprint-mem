@@ -1,1 +1,13 @@
 .venv
+
+*.pyc
+__pycache__/
+local_settings.py
+
+logs/*
+!logs/.keep
+
+static/*
+!static/.keep
+staticfiles/*
+!staticfiles/.keep

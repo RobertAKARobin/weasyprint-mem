@@ -1,8 +1,8 @@
 import os
 
-from django.conf.global_settings import DATETIME_INPUT_FORMATS
+from debug_toolbar import settings as debug_toolbar_settings
 
-DEBUG = (os.getenv('DEBUG') or False)
+DEBUG = os.getenv('DEBUG') or False
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
@@ -10,23 +10,48 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
 
+    'debug_toolbar',
+    'pympler',
+
     'apps.root',
 ]
 
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-]
+ALLOWED_HOSTS = ['*']
 
 SECRET_KEY = 'foo'
 
 MIDDLEWARE = [
-    'whitenoise.middleware.WhiteNoiseMiddleware', # Enables the server to serve static files in prod
-
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
+
+DEBUG_TOOLBAR_PANELS = (
+    'debug_toolbar.panels.history.HistoryPanel',
+    'debug_toolbar.panels.versions.VersionsPanel',
+    'debug_toolbar.panels.timer.TimerPanel',
+    'debug_toolbar.panels.settings.SettingsPanel',
+    'debug_toolbar.panels.headers.HeadersPanel',
+    'debug_toolbar.panels.request.RequestPanel',
+    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+    'debug_toolbar.panels.templates.TemplatesPanel',
+    'debug_toolbar.panels.cache.CachePanel',
+    'pympler.panels.MemoryPanel',
+)
+
+def show_toolbar(request):
+    return (request.path == '/')
+
+DEBUG_TOOLBAR_CONFIG = {
+    **debug_toolbar_settings.CONFIG_DEFAULTS,
+    'SHOW_TOOLBAR_CALLBACK': show_toolbar
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
+}
 
 HOST_URI = None # See lib.urls.CacheHostAddressMiddleware
 
@@ -45,6 +70,12 @@ TEMPLATES = [
         'DIRS': [
             os.path.join(BASE_DIR, 'apps/root/templates'),
         ],
+        'OPTIONS': {
+            'context_processors': (
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+            ),
+        },
     },
 ]
 

@@ -4,19 +4,17 @@ from django.template import loader
 
 import weasyprint
 
-class TestView(views.TemplateView):
-    template_name = 'test.djt'
+class IndexView(views.TemplateView):
+    template_name = 'index.djt'
 
+class PDFView(views.View):
     def get(self, request, *args, **kwargs):
-        if not request.GET.get('pdf'):
-            return super.get(request, *args, **kwargs)
-
         response = http.HttpResponse(self.to_pdf())
         response['Content-Type'] = 'application/pdf'
         return response
 
     def to_pdf(self):
-        template = loader.get_template(self.template_name)
+        template = loader.get_template('pdf.djt')
         html = template.render()
         font_config = weasyprint.text.fonts.FontConfiguration()
         return weasyprint.HTML(

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Weasyprint Memory Test</title>
+	</head>
+	<body>
+		<h1>Weasyprint Memory Test</h1>
+
+		{% if request.GET.pdf %}
+			<p><a href="?pdf=1">Regenerate PDF (refresh page)</a></p>
+			<p><a href="?">Hide PDF</a></p>
+			<p><a href="/pdf">Open PDF in its own window</a></p>
+			<iframe src="/pdf"></iframe>
+		{% else %}
+			<p><a href="?pdf=1">Generate PDF</a></p>
+		{% endif %}
+	</body>
+</html>
