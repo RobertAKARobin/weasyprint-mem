@@ -8,7 +8,10 @@ import weasyprint
 
 logfile_name = 'log.txt'
 
-os.remove(logfile_name)
+try:
+    os.remove(logfile_name)
+except OSError: # If file doesn't exist
+    pass
 logfile = open(logfile_name, 'a')
 logfile.close()
 
