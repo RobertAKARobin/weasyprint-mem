@@ -92,6 +92,8 @@ td, th {
 			<div class="log">
 				<h2>Last &lt;{{ log_max }} memory readings from psutil</h2>
 
+				<p>The memory is measured at the <em>start</em> of each request.</p>
+
 				<table>
 					<tr>
 						<th></th>
