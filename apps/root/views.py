@@ -12,9 +12,21 @@ import weasyprint
 log_max = 50
 log = collections.deque([], log_max)
 data_unit = 'mb'
+
 pid = os.getpid()
 mem = psutil.Process(pid).memory_full_info()
 fields = [field for field in mem._fields]
+
+words = 'all work and no play makes jack a dull boy'.split(' ')
+words = words + words + words
+cols = [*range(11)]
+rows = [*range(10)]
+table = []
+for rownum in rows:
+    row = []
+    table.append(row)
+    for colnum in cols:
+        row.append(words[colnum + rownum])
 
 class IndexView(views.TemplateView):
     template_name = 'index.djt'
@@ -57,7 +69,9 @@ class IndexView(views.TemplateView):
 
     def _to_pdf(self):
         template = loader.get_template('pdf.djt')
-        html = template.render()
+        html = template.render({
+            'table': table,
+        })
         font_config = weasyprint.text.fonts.FontConfiguration()
         return weasyprint.HTML(
             string=html,
