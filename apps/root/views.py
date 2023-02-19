@@ -1,4 +1,7 @@
+import collections
+import datetime
 import os
+import psutil
 
 from django import http
 import django.views.generic as views
@@ -6,35 +9,53 @@ from django.template import loader
 
 import weasyprint
 
-logfile_name = 'log.txt'
-
-try:
-    os.remove(logfile_name)
-except OSError: # If file doesn't exist
-    pass
-logfile = open(logfile_name, 'a')
-logfile.close()
+log_max = 50
+log = collections.deque([], log_max)
+data_unit = 'mb'
+pid = os.getpid()
+mem = psutil.Process(pid).memory_full_info()
+fields = [field for field in mem._fields]
 
 class IndexView(views.TemplateView):
     template_name = 'index.djt'
 
-class LogView(views.View):
+    def dispatch(self, request, *args, **kwargs):
+        pid = os.getpid()
+        mem = psutil.Process(pid).memory_full_info()
+        now = datetime.datetime.now()
+
+        output = self._output_type(request)
+        kwargs.update({
+            'data_unit': data_unit,
+            'fields': fields,
+            'log': log,
+            'log_max': log_max,
+            'output': output,
+        })
+
+        entry = {
+            'time': now,
+            'output': output,
+        }
+        for field in fields:
+            entry[field] = round(getattr(mem, field) / 1000000)
+        log.appendleft(entry)
+        return super().dispatch(request, *args, **kwargs)
+
     def get(self, request, *args, **kwargs):
-        with open(logfile_name, 'r') as logfile:
-            log = logfile.read()
-            return http.HttpResponse(log, content_type='text/plain')
+        if kwargs['output'] == 'pdf':
+            response = http.HttpResponse(self._to_pdf())
+            response['Content-Type'] = 'application/pdf'
+            return response
+        return super().get(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        with open(logfile_name, 'a') as logfile:
-            logfile.write(request.body)
+    def _output_type(self, request):
+        output = request.GET.get('output', '').lower()
+        if output == 'pdf':
+            return 'pdf'
+        return 'html'
 
-class PDFView(views.View):
-    def get(self, request, *args, **kwargs):
-        response = http.HttpResponse(self.to_pdf())
-        response['Content-Type'] = 'application/pdf'
-        return response
-
-    def to_pdf(self):
+    def _to_pdf(self):
         template = loader.get_template('pdf.djt')
         html = template.render()
         font_config = weasyprint.text.fonts.FontConfiguration()

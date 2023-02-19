@@ -1,6 +1,6 @@
 import os
 
-DEBUG = False
+DEBUG = os.getenv('DEBUG', True)
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
@@ -44,6 +44,9 @@ TEMPLATES = [
             os.path.join(BASE_DIR, 'apps/root/templates'),
         ],
         'OPTIONS': {
+            'builtins': [
+                'apps.root.templatetags',
+            ],
             'context_processors': (
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',

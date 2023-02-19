@@ -3,6 +3,10 @@
 	<head>
 		<title>Weasyprint Memory Test</title>
 		<style>
+* {
+	font-family: monospace;
+}
+
 .pdf__frame {
 	height: 300px;
 	width: 100%;
@@ -12,14 +16,26 @@
 	box-sizing: border-box;
 }
 
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	table-layout: fixed;
+}
+
+tr:nth-child(even) {
+	background-color: #eee;
+}
+
+td, th {
+	border: 0;
+	padding: 5px;
+	text-align: right;
+	white-space: nowrap;
+}
+
 @media (max-width: 600px) {
 	main {
 		flex-direction: column;
-	}
-
-	.log__frame {
-		height: 50vh;
-		width: 100%;
 	}
 }
 
@@ -49,10 +65,6 @@
 		margin-left: 20px;
 		padding-left: 20px;
 	}
-
-	.log__frame {
-		flex-grow: 1;
-	}
 }
 		</style>
 	</head>
@@ -66,21 +78,40 @@
 		<main>
 			<div class="pdf">
 				<h2>PDF</h2>
-				{% if request.GET.pdf %}
-					<p><a href="?pdf=1">Regenerate PDF (refresh page)</a></p>
+				{% if request.GET.showpdf %}
+					<p><a href="?showpdf=1">Regenerate PDF (refresh page)</a></p>
+					<p><a href="?output=pdf">Regenerate PDF in its own window</a></p>
 					<p><a href="?">Hide PDF</a></p>
-					<p><a href="/pdf">Open PDF in its own window</a></p>
-					<iframe class="pdf__frame" src="/pdf"></iframe>
+					<iframe class="pdf__frame" src="?output=pdf"></iframe>
 				{% else %}
-					<p><a href="?pdf=1">Generate PDF</a></p>
+					<p><a href="?showpdf=1">Generate PDF in iframe</a></p>
+					<p><a href="?output=pdf">Generate PDF in its own window</a></p>
 				{% endif %}
 			</div>
 
 			<div class="log">
-				<h2>Server log</h2>
-				<p>Deleted whenever the server restarts.</p>
-				<p><a href="/log">Open log in its own window</a></p>
-				<iframe class="log__frame" src="/log"></iframe>
+				<h2>Last &lt;{{ log_max }} memory readings from psutil</h2>
+
+				<table>
+					<tr>
+						<th></th>
+						<th>type</th>
+						<th>date</th>
+						{% for field in fields %}
+							<th>{{ field }}</th>
+						{% endfor %}
+					</tr>
+					{% for entry in log %}
+						<tr>
+							<td>{{ forloop.counter }}.</td>
+							<td>{{ entry.output }}</td>
+							<td>{{ entry.time|date:'y/m/d H:i:s' }}</td>
+							{% for field in fields %}
+								<td>{{ entry|attr:field }}{{ data_unit }}</td>
+							{% endfor %}
+						</tr>
+					{% endfor %}
+				</table>
 			</div>
 		</main>
 	</body>
