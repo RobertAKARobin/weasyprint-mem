@@ -1,31 +1,87 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
 		<title>Weasyprint Memory Test</title>
 		<style>
-			iframe {
-				width: 100%;
-			}
+.pdf__frame {
+	height: 300px;
+	width: 100%;
+}
+
+.log {
+	box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+	main {
+		flex-direction: column;
+	}
+
+	.log__frame {
+		height: 50vh;
+		width: 100%;
+	}
+}
+
+@media (min-width: 601px) {
+	body {
+		display: flex;
+		flex-direction: column;
+		min-height: 90vh;
+	}
+
+	main {
+		display: flex;
+		flex-grow: 1;
+	}
+
+	.pdf {
+		flex-shrink: 0;
+		width: 200px;
+	}
+
+	.log {
+		border-left: 2px solid #ccc;
+		display: flex;
+		flex-direction: column;
+		flex-grow: 1;
+		justify-content: flex-start;
+		margin-left: 20px;
+		padding-left: 20px;
+	}
+
+	.log__frame {
+		flex-grow: 1;
+	}
+}
 		</style>
 	</head>
 	<body>
-		<h1>Weasyprint Memory Test</h1>
+		<header>
+			<h1>Weasyprint Memory Test</h1>
 
-		{% if request.GET.pdf %}
-			<p><a href="?pdf=1">Regenerate PDF (refresh page)</a></p>
-			<p><a href="?">Hide PDF</a></p>
-			<p><a href="/pdf">Open PDF in its own window</a></p>
+			<p><a href="https://github.com/RobertAKARobin/weasyprint-mem">GitHub source</a></p>
+		</header>
 
-			<h2>PDF</h2>
-			<iframe src="/pdf"></iframe>
-		{% else %}
-			<p><a href="?pdf=1">Generate PDF</a></p>
-		{% endif %}
+		<main>
+			<div class="pdf">
+				<h2>PDF</h2>
+				{% if request.GET.pdf %}
+					<p><a href="?pdf=1">Regenerate PDF (refresh page)</a></p>
+					<p><a href="?">Hide PDF</a></p>
+					<p><a href="/pdf">Open PDF in its own window</a></p>
+					<iframe class="pdf__frame" src="/pdf"></iframe>
+				{% else %}
+					<p><a href="?pdf=1">Generate PDF</a></p>
+				{% endif %}
+			</div>
 
-		<h2>Server logs</h2>
-		<p>Deleted whenever the server restarts.</p>
-		<iframe src="/log"></iframe>
-
-		<p><a href="https://github.com/RobertAKARobin/weasyprint-mem">GitHub source</a></p>
+			<div class="log">
+				<h2>Server log</h2>
+				<p>Deleted whenever the server restarts.</p>
+				<p><a href="/log">Open log in its own window</a></p>
+				<iframe class="log__frame" src="/log"></iframe>
+			</div>
+		</main>
 	</body>
 </html>
