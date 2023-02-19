@@ -14,5 +14,7 @@
 		{% else %}
 			<p><a href="?pdf=1">Generate PDF</a></p>
 		{% endif %}
+
+		<p><a href="https://github.com/RobertAKARobin/weasyprint-mem">GitHub</a></p>
 	</body>
 </html>
