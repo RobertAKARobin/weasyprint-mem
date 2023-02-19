@@ -1,11 +1,29 @@
+import os
+
 from django import http
 import django.views.generic as views
 from django.template import loader
 
 import weasyprint
 
+logfile_name = 'log.txt'
+
+os.remove(logfile_name)
+logfile = open(logfile_name, 'a')
+logfile.close()
+
 class IndexView(views.TemplateView):
     template_name = 'index.djt'
+
+class LogView(views.View):
+    def get(self, request, *args, **kwargs):
+        with open(logfile_name, 'r') as logfile:
+            log = logfile.read()
+            return http.HttpResponse(log, content_type='text/plain')
+
+    def post(self, request, *args, **kwargs):
+        with open(logfile_name, 'a') as logfile:
+            logfile.write(request.body)
 
 class PDFView(views.View):
     def get(self, request, *args, **kwargs):

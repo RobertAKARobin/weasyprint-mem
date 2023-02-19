@@ -11,3 +11,5 @@ static/*
 !static/.keep
 staticfiles/*
 !staticfiles/.keep
+
+log.txt
