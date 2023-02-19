@@ -12,6 +12,7 @@ import weasyprint
 log_max = 50
 log = collections.deque([], log_max)
 data_unit = 'mb'
+font_config = weasyprint.text.fonts.FontConfiguration()
 
 pid = os.getpid()
 mem = psutil.Process(pid).memory_full_info()
@@ -72,7 +73,6 @@ class IndexView(views.TemplateView):
         html = template.render({
             'table': table,
         })
-        font_config = weasyprint.text.fonts.FontConfiguration()
         return weasyprint.HTML(
             string=html,
             encoding='utf-8'
